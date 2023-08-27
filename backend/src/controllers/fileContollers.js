@@ -1,16 +1,16 @@
 import mongoose from 'mongoose';
 import { FileSchema } from '../models/fileModel';
-import {mailToDestinataire} from '../../mailer';
+import { mailToDestinataire } from '../../mailer';
 
-const File=mongoose.model('File',FileSchema);
+const File = mongoose.model('File', FileSchema);
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const uniqid = require('uniqid');
 const AdmZip = require('adm-zip');
-export const addNewFile=async (req, res) => {
-     try {
-        if(!req.files) {
+export const addNewFile = async (req, res) => {
+    try {
+        if (!req.files) {
             res.send({
                 status: false,
                 message: 'No file uploaded'
@@ -28,7 +28,7 @@ export const addNewFile=async (req, res) => {
                 newFile.name = uniqid('', '-archive.zip');
                 zip.writeZip('./uploads/' + newFile.name);
 
-                const s = fs.readFileSync(path.join(__dirname,'../../uploads/' + newFile.name))
+                const s = fs.readFileSync(path.join(__dirname, '../../uploads/' + newFile.name))
                 const shasum = crypto.createHash('sha256')
                 shasum.update(s);
                 newFile.hash = shasum.digest('hex');
@@ -47,7 +47,7 @@ export const addNewFile=async (req, res) => {
                         });
                     })
 
-                }catch (err) {
+                } catch (err) {
                     console.log(err);
                 }
 
@@ -55,16 +55,16 @@ export const addNewFile=async (req, res) => {
 
                 //Use the mv() method to place the file in upload directory (i.e. "uploads")
                 const newFile = new File(req.body);
-                 newFile.name = uniqid('', '-' + fichier.name)
+                newFile.name = uniqid('', '-' + fichier.name)
                 await fichier.mv('./uploads/' + newFile.name);
 
-                 const chemin = path.join(__dirname,'../../uploads/' + newFile.name)
-                 const s = fs.readFileSync(chemin)
-                 const shasum = crypto.createHash('sha256')
-                 shasum.update(s)
-                 newFile.hash = shasum.digest('hex');
+                const chemin = path.join(__dirname, '../../uploads/' + newFile.name)
+                const s = fs.readFileSync(chemin)
+                const shasum = crypto.createHash('sha256')
+                shasum.update(s)
+                newFile.hash = shasum.digest('hex');
 
-                 newFile.token = crypto.randomBytes(64).toString('hex');
+                newFile.token = crypto.randomBytes(64).toString('hex');
 
                 try {
                     const file = await newFile.save();
@@ -76,7 +76,7 @@ export const addNewFile=async (req, res) => {
                             sent: res2.accepted.length
                         });
                     })
-                }catch (err) {
+                } catch (err) {
                     console.log(err);
                 }
 
@@ -90,11 +90,11 @@ export const addNewFile=async (req, res) => {
 
 }
 
-export const getFilewithID=async (req,res)=>{
+export const getFilewithID = async (req, res) => {
     try {
-        const file = await File.find({token : req.params.fileId})
-        fs.readFile('./uploads/' + file[0].name, {encoding:'base64'},(err, data) => {
-            if(err){
+        const file = await File.find({ token: req.params.fileId })
+        fs.readFile('./uploads/' + file[0].name, { encoding: 'base64' }, (err, data) => {
+            if (err) {
                 console.log(err)
             }
             res.send({
@@ -105,7 +105,7 @@ export const getFilewithID=async (req,res)=>{
                 token: file[0].token
             });
         })
-    }catch (err) {
+    } catch (err) {
         res.send(err);
 
     }

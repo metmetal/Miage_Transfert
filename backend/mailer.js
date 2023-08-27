@@ -27,7 +27,7 @@ const handlebarOptions = {
 };
 transporter.use('compile', hbs(handlebarOptions));
 
-export const mailToDestinataire = (emetteur, destinataire, token,message) => transporter.sendMail({
+export const mailToDestinataire = (emetteur, destinataire, token, message) => transporter.sendMail({
     from: emetteur,
     to: destinataire,
     subject: "Un fichier vous a été envoyé",
